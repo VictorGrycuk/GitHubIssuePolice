@@ -1,0 +1,16 @@
+{
+  "GithubConfiguration": {
+    "ProductHeader": "",
+    "Token": "",
+    "User": "",
+    "Repository": "",
+    "FiltersCreated": [""],
+    "FiltersModified": [""],
+    "TimeSpan": 0
+  },
+  "SlackConfiguration": {
+    "Webhook": "",
+    "MessageBody": "",
+    "SentBy": ""
+  }
+}
