@@ -55,13 +55,13 @@ namespace GithubIssueWatcher
                 configuration.ApiOptions);
         }
 
-        internal IEnumerable<T> Filter<T>(IEnumerable<T> issues, string lambda)
+        internal List<T> Filter<T>(List<T> issues, string lambda)
         {
             var discountFilterExpression = RoslynScripting.Evaluate<T>(
                 new System.Reflection.Assembly[] { typeof(T).Assembly },
                 configuration.Libraries,
                 lambda);
-            return issues.Where(discountFilterExpression);
+            return issues.Where(discountFilterExpression).ToList();
         }
     }
 }
