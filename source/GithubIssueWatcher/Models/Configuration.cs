@@ -1,4 +1,7 @@
-﻿namespace GithubIssueWatcher.Models
+﻿using Octokit;
+using System.Collections.Generic;
+
+namespace GithubIssueWatcher.Models
 {
     public class Configuration
     {
@@ -12,15 +15,27 @@
         public string Token { get; set; }
         public string User { get; set; }
         public string Repository { get; set; }
-        public string[] FiltersCreated { get; set; }
-        public string[] FiltersModified { get; set; }
-        public int TimeSpan { get; set; }
+        public string[] Libraries { get; set; }
+        public ApiOptions ApiOptions { get; set; }
+    }
+
+    public class Section
+    {
+        public Kind Kind { get; set; }
+        public string LeadingMessage { get; set; }
+        public string[] Filters { get; set; }
     }
 
     public class SlackConfiguration
     {
+        public List<Section> Sections = new List<Section>();
         public string Webhook { get; set; }
-        public string MessageBody { get; set; }
         public string SentBy { get; set; }
+    }
+
+    public enum Kind
+    {
+        Issue,
+        PullRequest
     }
 }

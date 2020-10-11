@@ -1,10 +1,8 @@
 ﻿using GithubIssueWatcher.Models;
-using Octokit;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GithubIssueWatcher
 {
@@ -16,53 +14,52 @@ namespace GithubIssueWatcher
         public GithubIssueWatcher(Configuration configuration)
         {
             this.configuration = configuration;
-            githubSDK = new GithubSDK(
-                this.configuration.GithubConfiguration.Token,
-                this.configuration.GithubConfiguration.User,
-                this.configuration.GithubConfiguration.Repository,
-                this.configuration.GithubConfiguration.ProductHeader
-            );
+            githubSDK = new GithubSDK(configuration.GithubConfiguration);
         }
 
         public void Run()
         {
-            // Issues created
-            var issuesCreated = githubSDK.GetIssues().Result;
+            var issues = configuration.SlackConfiguration.Sections.Any(i => i.Kind == Kind.Issue) ? githubSDK.GetIssues().Result : null;
+            var pullRequests = configuration.SlackConfiguration.Sections.Any(i => i.Kind == Kind.PullRequest) ? githubSDK.GetPullRequests().Result : null;
+            var message = string.Empty;
+            
+            foreach (var section in configuration.SlackConfiguration.Sections)
+            {
+                if (section.Kind == Kind.Issue && issues != null)
+                { 
+                    message += GenerateSectionMessage(section, issues);
+                };
+                
+                if (section.Kind == Kind.PullRequest && pullRequests != null)
+                {
+                    message += GenerateSectionMessage(section, pullRequests);
+                };
 
-            var message = GetMessage("The following issues were open:\n", issuesCreated, configuration.GithubConfiguration.FiltersCreated);
-            message += GetMessage("\nThe following issues were updated:\n", issuesCreated, configuration.GithubConfiguration.FiltersCreated);
+                message += Environment.NewLine;
+            }
 
-            Send(message);
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                Send(message);
+            }
         }
 
-        private string GetMessage(string leadingMessage, IEnumerable<Issue> issues, IEnumerable<string> filters)
+        private string GenerateSectionMessage<T>(Section section, IEnumerable<T> resources)
         {
-            var message = leadingMessage;
+            var message = section.LeadingMessage;
 
-            // Determine how many time span in days we have to add depending when it is run
-            var days = DateTime.Now.DayOfWeek == DayOfWeek.Saturday
-                ? 1
-                : DateTime.Now.DayOfWeek == DayOfWeek.Sunday
-                    ? 2
-                    : DateTime.Now.DayOfWeek == DayOfWeek.Monday
-                        ? 3
-                        : 0;
-
-            // Then we filter the number of issues by the configuration lambda filters
-            foreach (var filter in filters)
+            foreach (var filter in section.Filters)
             {
-                issues = githubSDK.Filter(issues, filter).Result;
+                resources = githubSDK.Filter(resources, filter);
             }
 
-            // Finally we filter by TimeSpan (I need to find to determine if use CreatedAt or UpdatedAt, or better yet, make it work with scripting)
-            issues = issues.Where(i => i.CreatedAt > DateTime.Now.Subtract(new TimeSpan(days, configuration.GithubConfiguration.TimeSpan, 0, 0)));
-
-            foreach (var issue in issues)
+            foreach (var resource in resources)
             {
-                message += $"• <{ issue.HtmlUrl }|{ issue.Number }>: { issue.Title }\n";
+                var genericResource = JObject.FromObject(resource);
+                message += $"• <{ genericResource["HtmlUrl"] }|{ genericResource["Number"] }>: { genericResource["Title"] }\n";
             }
 
-            return message;
+            return resources.Count() > 0 ? message : string.Empty;
         }
 
         private void Send(string message)

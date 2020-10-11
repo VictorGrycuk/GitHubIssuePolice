@@ -89,6 +89,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\RoslynScripting.cs" />
     <Compile Include="Helpers\Serializer.cs" />
     <Compile Include="Models\Configuration.cs" />
     <Compile Include="GithubIssueWatcher.cs" />

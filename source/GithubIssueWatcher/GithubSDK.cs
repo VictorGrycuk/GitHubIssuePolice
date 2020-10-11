@@ -1,7 +1,6 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Scripting;
-using Microsoft.CodeAnalysis.Scripting;
+﻿using GithubIssueWatcher.Helpers;
+using GithubIssueWatcher.Models;
 using Octokit;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,41 +10,57 @@ namespace GithubIssueWatcher
     internal class GithubSDK
     {
         private readonly GitHubClient client;
-        private readonly string User;
-        private readonly string Repository;
-
-        public GithubSDK(string token, string user, string repository, string productHeader = "GitHubIssueWatcher")
-        {
-            client = new GitHubClient(new ProductHeaderValue(productHeader));
-            client.Credentials = new Credentials(token);
-            User = user;
-            Repository = repository;
-        }
+        private readonly GithubConfiguration configuration;
 
         public GithubSDK(string productHeader = "GitHubIssueWatcher")
         {
             client = new GitHubClient(new ProductHeaderValue(productHeader));
         }
+        
+        public GithubSDK(GithubConfiguration configuration)
+        {
+            this.configuration = configuration;
+
+            client = new GitHubClient(new ProductHeaderValue(configuration.ProductHeader))
+            {
+                Credentials = new Credentials(configuration.Token)
+            };
+        }
 
         internal async Task<Repository> GetRepository()
         {
-            return await client.Repository.Get(User, Repository);
+            return await client.Repository.Get(configuration.User, configuration.Repository);
         }
 
         internal async Task<User> GetUser()
         {
-            return await client.User.Get(User);
+            return await client.User.Get(configuration.User);
         }
 
         internal async Task<IEnumerable<Issue>> GetIssues()
         {
-            return await client.Issue.GetAllForRepository(User, Repository);
+            return await client.Issue.GetAllForRepository(
+                configuration.User,
+                configuration.Repository,
+                new RepositoryIssueRequest { State = ItemStateFilter.All },
+                configuration.ApiOptions);
+        }
+        
+        internal async Task<IEnumerable<PullRequest>> GetPullRequests()
+        {
+            return await client.PullRequest.GetAllForRepository(
+                configuration.User,
+                configuration.Repository,
+                new PullRequestRequest { State = ItemStateFilter.All },
+                configuration.ApiOptions);
         }
 
-        internal async Task<IEnumerable<T>> Filter<T>(IEnumerable<T> issues, string lambda)
+        internal IEnumerable<T> Filter<T>(IEnumerable<T> issues, string lambda)
         {
-            var options = ScriptOptions.Default.AddReferences(typeof(T).Assembly).WithImports(new string[] { "System.Linq", "System.Collections.Generic" });
-            var discountFilterExpression = await CSharpScript.EvaluateAsync<Func<T, bool>>(lambda, options);
+            var discountFilterExpression = RoslynScripting.Evaluate<T>(
+                new System.Reflection.Assembly[] { typeof(T).Assembly },
+                configuration.Libraries,
+                lambda);
             return issues.Where(discountFilterExpression);
         }
     }

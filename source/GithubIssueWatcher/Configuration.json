@@ -4,13 +4,21 @@
     "Token": "",
     "User": "",
     "Repository": "",
-    "FiltersCreated": [""],
-    "FiltersModified": [""],
-    "TimeSpan": 0
+    "Libraries": [ "" ],
+    "ApiOptions": {
+      "PageCount": 1,
+      "PageSize":  60
+    }
   },
   "SlackConfiguration": {
+    "Sections": [
+      {
+        "Kind": 0,
+        "LeadingMessage": "",
+        "Filters": [ "" ]
+      }
+    ],
     "Webhook": "",
-    "MessageBody": "",
     "SentBy": ""
   }
 }
