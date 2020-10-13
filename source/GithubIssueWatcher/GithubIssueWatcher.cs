@@ -1,5 +1,6 @@
 ﻿using GithubIssueWatcher.Models;
 using Newtonsoft.Json.Linq;
+using Octokit;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -52,15 +53,18 @@ namespace GithubIssueWatcher
             foreach (var resource in resources)
             {
                 var genericResource = JObject.FromObject(resource);
-                blocks.Add(new LinkButton($"*{ genericResource["Title"] }*", "See " + resourceName, genericResource["HtmlUrl"].ToString()));
-                blocks.Add(new Fields(new List<BaseText>
-                {
-                    new MarkdownText($"*{ resourceName } Number:*\n#" + genericResource["Number"]),
-                    new MarkdownText("*Open by:*\n" + genericResource["User"]["Login"]),
-                    new MarkdownText("*Created at:*\n" + genericResource["CreatedAt"]),
-                    new MarkdownText("*Closed at:*\n" + genericResource["ClosedAt"]),
-                }));
-                blocks.Add(new Divider());
+                var overflow = new Overflow($"*<{ genericResource["HtmlUrl"] }|#{ genericResource["Number"] }>:*  { genericResource["Title"] }");
+
+                overflow.Accessory.Options.Add(new Option() { Text = new PlainText("Created by: " + genericResource["User"]["Login"]) });
+                overflow.Accessory.Options.Add(new Option() { Text = new PlainText("Created at: " + genericResource["CreatedAt"]) });
+
+                var assignee = genericResource["Assignee"].Type != JTokenType.Null ? genericResource["Assignee"]["Login"].ToString() : string.Empty;
+                if (!string.IsNullOrWhiteSpace(assignee)) overflow.Accessory.Options.Add(new Option() { Text = new PlainText("Assignee: " + assignee) });
+
+                overflow.Accessory.Options.Add(new Option() { Text = new PlainText("Closed by: " + genericResource["ClosedBy"]) });
+                overflow.Accessory.Options.Add(new Option() { Text = new PlainText("Closed at: " + genericResource["ClosedAt"]) });
+
+                blocks.Add(overflow);
             }
 
             blocks.Add(new Divider());

@@ -157,9 +157,7 @@ namespace GithubIssueWatcher
             {
                 Type = "button",
                 Text = new PlainText(buttonText),
-                Url = urlValue,
-                Value = null,
-                ActionId = null
+                Url = urlValue
             };
         }
     }
@@ -180,6 +178,17 @@ namespace GithubIssueWatcher
 
         [JsonProperty("action_id")]
         public string ActionId { get; set; }
+
+        [JsonProperty("options")]
+        public List<Option> Options { get; set; }
+
+        public Accessory()
+        {
+            Value = null;
+            Url = null;
+            ActionId = null;
+            Options = null;
+        }
     }
 
     public class Fields : Block
@@ -188,6 +197,29 @@ namespace GithubIssueWatcher
         {
             Fields = fields;
             Type = "section";
+        }
+    }
+
+    public class Option
+    {
+        [JsonProperty("text")]
+        public PlainText Text { get; set; }
+
+        [JsonProperty("value")]
+        public string Value { get; set; }
+    }
+
+    public class Overflow : Block
+    {   
+        public Overflow(string text)
+        {
+            Type = "section";
+            Text = new MarkdownText(text);
+            Accessory = new Accessory
+            {
+                Type = "overflow",
+                Options = new List<Option>()
+            };
         }
     }
 }
