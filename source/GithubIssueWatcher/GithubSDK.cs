@@ -57,7 +57,7 @@ namespace GithubIssueWatcher
 
         internal List<T> Filter<T>(List<T> issues, string lambda)
         {
-            var discountFilterExpression = RoslynScripting.Evaluate<T>(
+            var filterExpression = RoslynScripting.Evaluate<T>(
                 new System.Reflection.Assembly[] { typeof(T).Assembly },
                 configuration.Libraries,
                 lambda);
