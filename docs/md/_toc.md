@@ -14,5 +14,3 @@
 > [GithubIssueWatcher](/docs/issue-watcher)
 >
 > [Helpers](/docs/helpers)
-
-[Code Features](/docs/code-features)

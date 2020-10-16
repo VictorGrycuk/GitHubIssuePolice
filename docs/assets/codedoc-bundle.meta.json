@@ -74,6 +74,11 @@
       "name": "gatherFootnotes",
       "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/components/footnote/gather-footnotes.js",
       "hash": "98gpjOqjxRN0NiuaxB/79Q=="
+    },
+    {
+      "name": "reloadOnChange",
+      "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/serve/reload.js",
+      "hash": "PCRk+iTv1PMdkEQu0ynedw=="
     }
   ],
   "components": [
@@ -106,11 +111,6 @@
       "name": "ConfigTransport",
       "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/transport/config.js",
       "hash": "vVx1EDeks46rCWeEnus9yw=="
-    },
-    {
-      "name": "TabSelector",
-      "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/components/tabs/selector.js",
-      "hash": "pY/nvGKPP2KGab1Br21EsA=="
     }
   ],
   "renderer": {
