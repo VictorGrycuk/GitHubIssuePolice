@@ -74,11 +74,6 @@
       "name": "gatherFootnotes",
       "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/components/footnote/gather-footnotes.js",
       "hash": "98gpjOqjxRN0NiuaxB/79Q=="
-    },
-    {
-      "name": "reloadOnChange",
-      "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/serve/reload.js",
-      "hash": "PCRk+iTv1PMdkEQu0ynedw=="
     }
   ],
   "components": [

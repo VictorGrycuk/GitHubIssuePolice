@@ -14,7 +14,6 @@ import { tocHighlight } from 'C:/Repositories/GitHubIssuePolice/.codedoc/node_mo
 import { postNavSearch } from 'C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/components/page/toc/search/post-nav/index.js';postNavSearch();
 import { copyLineLinks } from 'C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/components/code/line-links/copy-line-link.js';copyLineLinks();
 import { gatherFootnotes } from 'C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/components/footnote/gather-footnotes.js';gatherFootnotes();
-import { reloadOnChange } from 'C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/serve/reload.js';reloadOnChange();
 import { ToCPrevNext } from 'C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/components/page/toc/prevnext/index.js';
 import { CollapseControl } from 'C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/components/collapse/collapse-control.js';
 import { GithubSearch } from 'C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/components/misc/github/search.js';
