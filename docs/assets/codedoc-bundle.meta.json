@@ -1,0 +1,121 @@
+{
+  "init": [
+    {
+      "name": "initJssCs",
+      "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/transport/setup-jss.js",
+      "hash": "SDh6A9WvEZbpK2DdrCg+Sg=="
+    },
+    {
+      "name": "installTheme",
+      "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/content/theme.ts",
+      "hash": "g29J43Z1Zalm0rpylsHFPg=="
+    },
+    {
+      "name": "codeSelection",
+      "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/components/code/selection.js",
+      "hash": "MlPhzgqrwwpVgRcY5OmBXQ=="
+    },
+    {
+      "name": "sameLineLengthInCodes",
+      "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/components/code/same-line-length.js",
+      "hash": "5vrDzpbABAEo/+xs65ziQA=="
+    },
+    {
+      "name": "initHintBox",
+      "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/components/code/line-hint/index.js",
+      "hash": "S8RggKGZGGNJVYy3WMUjbA=="
+    },
+    {
+      "name": "initCodeLineRef",
+      "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/components/code/line-ref/index.js",
+      "hash": "RqtBZdzmb3/eFvFc+HB5/Q=="
+    },
+    {
+      "name": "initSmartCopy",
+      "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/components/code/smart-copy.js",
+      "hash": "HVaTc/XAUdoEASKivi4PmA=="
+    },
+    {
+      "name": "copyHeadings",
+      "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/components/heading/copy-headings.js",
+      "hash": "SjzJsm7HqVm6jAb6qj4JcA=="
+    },
+    {
+      "name": "contentNavHighlight",
+      "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/components/page/contentnav/highlight.js",
+      "hash": "AhWNH6R3HJhD45Bz+KMEqw=="
+    },
+    {
+      "name": "loadDeferredIFrames",
+      "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/transport/deferred-iframe.js",
+      "hash": "MwIha4tCuCe3lI1va/PKIQ=="
+    },
+    {
+      "name": "smoothLoading",
+      "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/transport/smooth-loading.js",
+      "hash": "0rgBfzSYM4EEU9p+f1vjRg=="
+    },
+    {
+      "name": "tocHighlight",
+      "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/components/page/toc/toc-highlight.js",
+      "hash": "dlodo/IN0aITi1CUClZylw=="
+    },
+    {
+      "name": "postNavSearch",
+      "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/components/page/toc/search/post-nav/index.js",
+      "hash": "r8PZ5vgKZk/IKBbloUkeYQ=="
+    },
+    {
+      "name": "copyLineLinks",
+      "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/components/code/line-links/copy-line-link.js",
+      "hash": "xUjTdqcZNAvEEE7NF3BY5A=="
+    },
+    {
+      "name": "gatherFootnotes",
+      "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/components/footnote/gather-footnotes.js",
+      "hash": "98gpjOqjxRN0NiuaxB/79Q=="
+    }
+  ],
+  "components": [
+    {
+      "name": "ToCPrevNext",
+      "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/components/page/toc/prevnext/index.js",
+      "hash": "Xe9iObdUoxxjTmEwEpNuNg=="
+    },
+    {
+      "name": "CollapseControl",
+      "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/components/collapse/collapse-control.js",
+      "hash": "UF0ADWAtXpt77Xnn3/6MRA=="
+    },
+    {
+      "name": "GithubSearch",
+      "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/components/misc/github/search.js",
+      "hash": "wG0ZPsDewoypwFHAakVU7Q=="
+    },
+    {
+      "name": "ToCToggle",
+      "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/components/page/toc/toggle/index.js",
+      "hash": "/LXrPBJFkDmTncuU6oWrTA=="
+    },
+    {
+      "name": "DarkModeSwitch",
+      "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/components/darkmode/index.js",
+      "hash": "JEe08i+lr92HI6xcDyXo4g=="
+    },
+    {
+      "name": "ConfigTransport",
+      "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/transport/config.js",
+      "hash": "vVx1EDeks46rCWeEnus9yw=="
+    },
+    {
+      "name": "TabSelector",
+      "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/components/tabs/selector.js",
+      "hash": "pY/nvGKPP2KGab1Br21EsA=="
+    }
+  ],
+  "renderer": {
+    "name": "getRenderer",
+    "filename": "C:/Repositories/GitHubIssuePolice/.codedoc/node_modules/@codedoc/core/dist/es5/transport/renderer.js",
+    "hash": "ffXSLQ5/5+44OxIue5RH1w=="
+  }
+}
