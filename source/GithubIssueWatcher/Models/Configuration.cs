@@ -21,7 +21,7 @@ namespace GithubIssueWatcher.Models
 
     public class Section
     {
-        public Kind Kind { get; set; }
+        public ResourceType Kind { get; set; }
         public string LeadingMessage { get; set; }
         public string[] Filters { get; set; }
     }
@@ -31,11 +31,5 @@ namespace GithubIssueWatcher.Models
         public List<Section> Sections = new List<Section>();
         public string Webhook { get; set; }
         public string SentBy { get; set; }
-    }
-
-    public enum Kind
-    {
-        Issue,
-        PullRequest
     }
 }
