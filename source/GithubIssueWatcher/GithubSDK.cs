@@ -1,4 +1,6 @@
-﻿using GithubIssueWatcher.Helpers;
+﻿using AutoMapper;
+using AutoMapper.Configuration;
+using GithubIssueWatcher.Helpers;
 using GithubIssueWatcher.Models;
 using Octokit;
 using System.Collections.Generic;
@@ -11,6 +13,7 @@ namespace GithubIssueWatcher
     {
         private readonly GitHubClient client;
         private readonly GithubConfiguration configuration;
+        private readonly IMapper mapper;
 
         public GithubSDK(string productHeader = "GitHubIssueWatcher")
         {
@@ -25,6 +28,13 @@ namespace GithubIssueWatcher
             {
                 Credentials = new Credentials(configuration.Token)
             };
+
+            var cfg = new MapperConfigurationExpression();
+            cfg.CreateMap<Issue, Resource>();
+            cfg.CreateMap<PullRequest, Resource>();
+
+            var mapperConfig = new MapperConfiguration(cfg);
+            mapper = new Mapper(mapperConfig);
         }
 
         internal async Task<Repository> GetRepository()
@@ -37,22 +47,54 @@ namespace GithubIssueWatcher
             return await client.User.Get(configuration.User);
         }
 
-        internal async Task<IEnumerable<Issue>> GetIssues()
+        internal List<Resource> GetIssues()
         {
-            return await client.Issue.GetAllForRepository(
+            var issuesList = client.Issue.GetAllForRepository(
                 configuration.User,
                 configuration.Repository,
                 new RepositoryIssueRequest { State = ItemStateFilter.All },
-                configuration.ApiOptions);
+                configuration.ApiOptions).Result;
+
+            return MapToResource(issuesList.Where(i => i.PullRequest == null), ResourceType.ISSUE);
         }
         
-        internal async Task<IEnumerable<PullRequest>> GetPullRequests()
+        internal List<Resource> GetPullRequests()
         {
-            return await client.PullRequest.GetAllForRepository(
+            var prList = client.PullRequest.GetAllForRepository(
                 configuration.User,
                 configuration.Repository,
                 new PullRequestRequest { State = ItemStateFilter.All },
+                configuration.ApiOptions).Result;
+
+            return MapToResource(prList, ResourceType.PR);
+        }
+
+        internal async Task<IEnumerable<Branch>> GetBranches()
+        {
+            return await client.Repository.Branch.GetAll(
+                configuration.User,
+                configuration.Repository,
                 configuration.ApiOptions);
+        }
+
+        internal async Task<GitHubCommit> GetCommits(string sha)
+        {
+            return await client.Repository.Commit.Get(
+            configuration.User,
+            configuration.Repository,
+            sha);
+        }
+
+        private List<Resource> MapToResource<T>(T unmappedResource, ResourceType resourceType)
+        {
+            var resourceList = mapper.Map<List<Resource>>(unmappedResource);
+            resourceList.ForEach(r => 
+            {
+                r.ResourceType = resourceType;
+                r.Events = client.Issue.Timeline.GetAllForIssue(configuration.User, configuration.Repository, r.Number).Result.ToList();
+            });
+
+            return resourceList;
         }
 
         internal List<T> Filter<T>(List<T> issues, string lambda)
@@ -61,7 +103,7 @@ namespace GithubIssueWatcher
                 new System.Reflection.Assembly[] { typeof(T).Assembly },
                 configuration.Libraries,
                 lambda);
-            return issues.Where(discountFilterExpression).ToList();
+            return issues.Where(filterExpression).ToList();
         }
     }
 }

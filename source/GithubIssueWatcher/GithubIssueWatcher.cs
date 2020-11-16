@@ -1,6 +1,6 @@
-﻿using GithubIssueWatcher.Models;
-using Newtonsoft.Json.Linq;
-using Octokit;
+﻿using Azure_Resource_Police.Helpers;
+using GithubIssueWatcher.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,31 +10,24 @@ namespace GithubIssueWatcher
     {
         private readonly GithubSDK githubSDK;
         private readonly Configuration configuration;
+        private readonly Arguments options;
 
-        public GithubIssueWatcher(Configuration configuration)
+        public GithubIssueWatcher(Arguments options)
         {
-            this.configuration = configuration;
+            this.options = options;
+            configuration = LoadConfiguration();
             githubSDK = new GithubSDK(configuration.GithubConfiguration);
         }
 
         public void Run()
         {
-            var issues = configuration.SlackConfiguration.Sections.Any(i => i.Kind == Kind.Issue) ? githubSDK.GetIssues().Result : null;
-            var pullRequests = configuration.SlackConfiguration.Sections.Any(i => i.Kind == Kind.PullRequest) ? githubSDK.GetPullRequests().Result : null;
-            var message = string.Empty;
+            var resources = githubSDK.GetIssues();
+            resources.AddRange(githubSDK.GetPullRequests());
             var blocks = new List<Block>();
 
             foreach (var section in configuration.SlackConfiguration.Sections)
             {
-                if (section.Kind == Kind.Issue && issues != null)
-                {
-                    blocks.AddRange(CreateSectionBlocks(issues, section, "Issue"));
-                };
-
-                if (section.Kind == Kind.PullRequest && pullRequests != null)
-                {
-                    blocks.AddRange(CreateSectionBlocks(pullRequests, section, "PR"));
-                };
+                blocks.AddRange(CreateSectionBlocks(resources, section));
             }
 
             if (blocks.Count > 0)
@@ -43,31 +36,36 @@ namespace GithubIssueWatcher
             }
         }
 
-        private List<Block> CreateSectionBlocks<T>(IEnumerable<T> sectionResources, Section section, string resourceName)
+        private List<Block> CreateSectionBlocks(List<Resource> sectionResources, Section section)
         {
             var blocks = new List<Block>();
-            var resources = GetFilteredResources(sectionResources, section.Filters);
+            var resources = GetFilteredResources(sectionResources, section.Filters).Where(r => r.ResourceType == section.Kind).ToList();
             if (resources.Count == 0) return blocks;
 
-            blocks.Add(new Title(section.LeadingMessage));
             foreach (var resource in resources)
             {
-                var genericResource = JObject.FromObject(resource);
-                var overflow = new Overflow($"*<{ genericResource["HtmlUrl"] }|#{ genericResource["Number"] }>:*  { genericResource["Title"] }");
+                var overflow = new Overflow($"*{ section.LeadingMessage } <{ resource.HtmlUrl }|#{ resource.Number }>:*  { resource.Title }");
 
-                overflow.Accessory.Options.Add(new Option() { Text = new PlainText("Created by: " + genericResource["User"]["Login"]) });
-                overflow.Accessory.Options.Add(new Option() { Text = new PlainText("Created at: " + genericResource["CreatedAt"]) });
+                overflow.Accessory.Options.Add(new Option() { Text = new PlainText("Created by: " + resource.User.Login) });
+                overflow.Accessory.Options.Add(new Option() { Text = new PlainText("Created at: " + resource.CreatedAt) });
 
-                var assignee = genericResource["Assignee"].Type != JTokenType.Null ? genericResource["Assignee"]["Login"].ToString() : string.Empty;
-                if (!string.IsNullOrWhiteSpace(assignee)) overflow.Accessory.Options.Add(new Option() { Text = new PlainText("Assignee: " + assignee) });
+                if (resource.Assignees.Count() > 0)
+                {
+                    overflow.Accessory.Options.Add(new Option() { Text = new PlainText("Assignee: " + resource.Assignees[0].Login ) });
+                }
 
-                overflow.Accessory.Options.Add(new Option() { Text = new PlainText("Closed by: " + genericResource["ClosedBy"]) });
-                overflow.Accessory.Options.Add(new Option() { Text = new PlainText("Closed at: " + genericResource["ClosedAt"]) });
+                if (resource.ClosedBy != null)
+                {
+                    overflow.Accessory.Options.Add(new Option() { Text = new PlainText("Closed by: " + resource.ClosedBy) });
+                }
+
+                if (resource.Events.Count > 0)
+                {
+                    overflow.Accessory.Options.Add(new Option() { Text = new PlainText("Latest Event: " + resource.Events[resource.Events.Count - 1].Event.StringValue) });
+                }
 
                 blocks.Add(overflow);
             }
-
-            blocks.Add(new Divider());
 
             return blocks;
         }
@@ -92,5 +90,51 @@ namespace GithubIssueWatcher
                 channel: configuration.SlackConfiguration.SentBy,
                 blocks);
         }
+
+        private Configuration LoadConfiguration()
+        {
+            if (string.IsNullOrEmpty(options.ConfigurationPath)) throw new ArgumentNullException("Configuration file not found");
+
+            var configuration = Serializer.Deserialize<Configuration>(options.ConfigurationPath);
+
+            return string.IsNullOrWhiteSpace(options.Password) ? configuration : DecryptConfiguration(configuration, options.Password);
+        }
+
+        private static Configuration DecryptConfiguration(Configuration configuration, string password)
+        {
+            configuration.GithubConfiguration.Token = Helpers.AESEncryption.Decrypt(configuration.GithubConfiguration.Token, password);
+            configuration.SlackConfiguration.Webhook = Helpers.AESEncryption.Decrypt(configuration.SlackConfiguration.Webhook, password);
+
+            return configuration;
+        }
+
+        private static Configuration EncryptConfiguration(Configuration configuration, string password)
+        {
+            configuration.GithubConfiguration.Token = Helpers.AESEncryption.Encrypt(configuration.GithubConfiguration.Token, password);
+            configuration.SlackConfiguration.Webhook = Helpers.AESEncryption.Encrypt(configuration.SlackConfiguration.Webhook, password);
+
+            return configuration;
+        }
+
+        internal static void FileEncryption(string filepath, string password, EncryptionAction encryptionAction)
+        {
+            var configuration = Serializer.Deserialize<Configuration>(filepath);
+            configuration = encryptionAction == EncryptionAction.encrypt
+                ? EncryptConfiguration(configuration, password)
+                : DecryptConfiguration(configuration, password);
+
+            WriteConfiguration(configuration, filepath);
+        }
+
+        internal static void WriteConfiguration(Configuration configuration, string filepath)
+        {
+            Serializer.Serialize(filepath, configuration);
+        }
+    }
+
+    public enum EncryptionAction
+    {
+        encrypt,
+        decrypt
     }
 }
